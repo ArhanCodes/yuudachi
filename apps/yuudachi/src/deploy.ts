@@ -25,6 +25,7 @@ import {
 	SponsorCommand,
 	ReportCommand,
 	ClaimSponsorCommand,
+	SettingsCommand,
 
 	// Context Menu
 	HistoryUserContextCommand,
@@ -65,6 +66,7 @@ try {
 			SponsorCommand,
 			ReportCommand,
 			ClaimSponsorCommand,
+			SettingsCommand,
 
 			// Context Menu
 			HistoryUserContextCommand,

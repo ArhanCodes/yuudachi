@@ -19,6 +19,7 @@ export * from "./utility/refreshScams.js";
 export * from "./utility/sponsor.js";
 export * from "./utility/report.js";
 export * from "./utility/claimSponsor.js";
+export * from "./utility/settings.js";
 export * from "./context-menu/history.js";
 export * from "./context-menu/sponsor.js";
 export * from "./context-menu/clear.js";
