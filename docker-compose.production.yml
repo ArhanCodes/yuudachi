@@ -47,6 +47,30 @@ services:
       - .env
     restart: unless-stopped
 
+  website:
+    build:
+      context: .
+      dockerfile: Dockerfile.website
+      args:
+        BOT_API_URL: http://bot:3003
+        JWT_TOKEN: ${JWT_TOKEN}
+        DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID}
+        DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET}
+        DISCORD_REDIRECT_URI: ${DISCORD_REDIRECT_URI}
+        REPORT_URL: http://localhost:3001
+    depends_on:
+      - bot
+    environment:
+      - BOT_API_URL=http://bot:3003
+      - JWT_TOKEN=${JWT_TOKEN}
+      - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
+      - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
+      - DISCORD_REDIRECT_URI=${DISCORD_REDIRECT_URI}
+      - REPORT_URL=http://localhost:3001
+    ports:
+      - "3001:3000"
+    restart: unless-stopped
+
   deploy-commands:
     build: .
     depends_on:
