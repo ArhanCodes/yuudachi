@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
 		secure: true,
 	});
 
-	return NextResponse.redirect(
-		new URL("/dashboard", process.env.NODE_ENV === "development" ? `http://${req.headers.get("host")}` : req.url),
-	);
+	const host = req.headers.get("host") ?? "localhost:3000";
+	const baseUrl = `http://${host}`;
+	return NextResponse.redirect(new URL("/dashboard", baseUrl));
 }

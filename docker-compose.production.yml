@@ -67,6 +67,8 @@ services:
       - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
       - DISCORD_REDIRECT_URI=${DISCORD_REDIRECT_URI}
       - REPORT_URL=http://localhost:3001
+      - HOSTNAME=0.0.0.0
+      - PORT=3000
     ports:
       - "3002:3000"
     restart: unless-stopped
