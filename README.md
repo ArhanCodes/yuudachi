@@ -1,8 +1,6 @@
 # Yuudachi
 
-> .
-
-I'll get into filling this out later, gotta stay tuned for now.
+I (arhan) made a self hosting guide [here](https://github.com/ArhanCodes/yuudachi/blob/main/SELFHOST.md)
 
 ## Author
 
