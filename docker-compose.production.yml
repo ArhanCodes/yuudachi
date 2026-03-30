@@ -68,7 +68,7 @@ services:
       - DISCORD_REDIRECT_URI=${DISCORD_REDIRECT_URI}
       - REPORT_URL=http://localhost:3001
     ports:
-      - "3001:3000"
+      - "3002:3000"
     restart: unless-stopped
 
   deploy-commands:
