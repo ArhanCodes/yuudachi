@@ -79,12 +79,38 @@ try {
 
 	await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_CLIENT_ID!, process.env.DISCORD_GUILD_ID!), {
 		body: [
+			// Moderation
+			AntiRaidNukeCommand,
+			BanCommand,
+			CaseLookupCommand,
+			DurationCommand,
+			HistoryCommand,
+			KickCommand,
+			ReasonCommand,
+			ReferenceCommand,
+			SoftbanCommand,
+			UnbanCommand,
+			WarnCommand,
+			LockdownCommand,
+			TimeoutCommand,
+			ClearCommand,
+			ReportUtilsCommand,
+
 			// Utility
+			PingCommand,
+			CheckScamCommand,
+			RefreshScamlistCommand,
 			SponsorCommand,
+			ReportCommand,
 			ClaimSponsorCommand,
+			SettingsCommand,
 
 			// Context Menu
+			HistoryUserContextCommand,
 			SponsorUserContextCommand,
+			ClearContextCommand,
+			ReportMessageContextCommand,
+			ReportUserContextCommand,
 		],
 	});
 
