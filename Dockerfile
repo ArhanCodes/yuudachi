@@ -24,7 +24,7 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/ packages/
 COPY apps/yuudachi/package.json apps/yuudachi/
-RUN pnpm install --frozen-lockfile --ignore-scripts && pnpm rebuild
+RUN pnpm install --frozen-lockfile --ignore-scripts && pnpm rebuild re2
 
 COPY --from=builder /app/packages/framework/dist/ packages/framework/dist/
 COPY --from=builder /app/apps/yuudachi/dist/ apps/yuudachi/dist/
