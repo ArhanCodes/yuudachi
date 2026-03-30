@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
 		maxAge: json.expires_in,
 		path: "/",
 		httpOnly: true,
-		secure: true,
+		secure: false,
 	});
 
 	const host = req.headers.get("host") ?? "localhost:3000";
