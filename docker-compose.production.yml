@@ -28,21 +28,6 @@ services:
       interval: 10s
       timeout: 5s
 
-  migrate:
-    build: .
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      - PGHOST=postgres
-      - PGPORT=5432
-      - PGUSER=postgres
-      - PGPASSWORD=${PGPASSWORD}
-      - PGDB=postgres
-    env_file:
-      - .env
-    command: ["npx", "ley", "up"]
-
   bot:
     build: .
     depends_on:
@@ -50,8 +35,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      migrate:
-        condition: service_completed_successfully
     environment:
       - PGHOST=postgres
       - PGPORT=5432
