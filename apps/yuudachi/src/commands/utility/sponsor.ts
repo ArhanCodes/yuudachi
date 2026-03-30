@@ -1,66 +1,50 @@
 import { injectable } from "@needle-di/core";
-import { kSQL, Command, createButton, createMessageActionRow, container } from "@yuudachi/framework";
+import { Command, createButton, createMessageActionRow } from "@yuudachi/framework";
 import type { ArgsParam, InteractionParam, LocaleParam, CommandMethod } from "@yuudachi/framework/types";
-import { type Snowflake, ButtonStyle, ComponentType, MessageFlags } from "discord.js";
-import i18next from "i18next";
+import { ButtonStyle, ComponentType, MessageFlags } from "discord.js";
 import { nanoid } from "nanoid";
-import type { Sql } from "postgres";
 import type { SponsorCommand, SponsorUserContextCommand } from "../../interactions/index.js";
 
 @injectable()
 export default class extends Command<typeof SponsorCommand | typeof SponsorUserContextCommand> {
 	public constructor() {
-		super(["sponsor", "Assign sponsor"]);
+		super(["role", "Assign role"]);
 	}
 
-	private async handle(
-		interaction: InteractionParam | InteractionParam<CommandMethod.UserContext>,
+	public override async chatInput(
+		interaction: InteractionParam,
 		args: ArgsParam<typeof SponsorCommand>,
 		locale: LocaleParam,
 	): Promise<void> {
 		const reply = await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
-		const sql = container.get<Sql<any>>(kSQL);
+		const role = args.role;
+		const targetUser = args.user;
 
-		const [roles] = await sql<[{ sponsor_role_id: Snowflake | null }?]>`
-			select sponsor_role_id
-			from guild_settings
-			where guild_id = ${interaction.guildId}
-		`;
-
-		if (!roles?.sponsor_role_id) {
-			throw new Error(i18next.t("command.utility.sponsor.errors.no_role", { lng: locale }));
+		if (targetUser.member?.roles.cache.has(role.role!.id)) {
+			await interaction.editReply({
+				content: `${targetUser.user.toString()} already has the ${role.role!.name} role.`,
+			});
+			return;
 		}
 
-		if (args.user.member?.roles.cache.has(roles.sponsor_role_id)) {
-			throw new Error(
-				i18next.t("command.utility.sponsor.errors.already_sponsor", {
-					user: `${args.user.user.toString()} - ${args.user.user.tag} (${args.user.user.id})`,
-					lng: locale,
-				}),
-			);
-		}
-
-		const sponsorKey = nanoid();
+		const confirmKey = nanoid();
 		const cancelKey = nanoid();
 
-		const roleButton = createButton({
-			label: i18next.t("command.utility.sponsor.buttons.execute", { lng: locale }),
-			customId: sponsorKey,
+		const confirmButton = createButton({
+			label: "Confirm",
+			customId: confirmKey,
 			style: ButtonStyle.Success,
 		});
 		const cancelButton = createButton({
-			label: i18next.t("command.common.buttons.cancel", { lng: locale }),
+			label: "Cancel",
 			customId: cancelKey,
 			style: ButtonStyle.Secondary,
 		});
 
 		await interaction.editReply({
-			content: i18next.t("command.utility.sponsor.pending", {
-				user: `${args.user.user.toString()} - ${args.user.user.tag} (${args.user.user.id})`,
-				lng: locale,
-			}),
-			components: [createMessageActionRow([cancelButton, roleButton])],
+			content: `Add the **${role.role!.name}** role to ${targetUser.user.toString()} (${targetUser.user.tag} - ${targetUser.user.id})?`,
+			components: [createMessageActionRow([cancelButton, confirmButton])],
 		});
 
 		const collectedInteraction = await reply
@@ -72,7 +56,7 @@ export default class extends Command<typeof SponsorCommand | typeof SponsorUserC
 			.catch(async () => {
 				try {
 					await interaction.editReply({
-						content: i18next.t("command.common.errors.timed_out", { lng: locale }),
+						content: "Timed out.",
 						components: [],
 					});
 				} catch {}
@@ -82,36 +66,19 @@ export default class extends Command<typeof SponsorCommand | typeof SponsorUserC
 
 		if (collectedInteraction?.customId === cancelKey) {
 			await collectedInteraction.update({
-				content: i18next.t("command.utility.sponsor.cancel", {
-					user: `${args.user.user.toString()} - ${args.user.user.tag} (${args.user.user.id})`,
-					lng: locale,
-				}),
+				content: `Cancelled adding **${role.role!.name}** to ${targetUser.user.toString()}.`,
 				components: [],
 			});
-		} else if (collectedInteraction?.customId === sponsorKey) {
+		} else if (collectedInteraction?.customId === confirmKey) {
 			await collectedInteraction.deferUpdate();
 
-			await args.user.member?.roles.add(
-				roles.sponsor_role_id,
-				i18next.t("command.utility.sponsor.reason", { lng: locale }),
-			);
+			await targetUser.member?.roles.add(role.role!.id, `Role assigned by ${interaction.user.tag}`);
 
 			await collectedInteraction.editReply({
-				content: i18next.t("command.utility.sponsor.success", {
-					user: `${args.user.user.toString()} - ${args.user.user.tag} (${args.user.user.id})`,
-					lng: locale,
-				}),
+				content: `Successfully added **${role.role!.name}** to ${targetUser.user.toString()}.`,
 				components: [],
 			});
 		}
-	}
-
-	public override async chatInput(
-		interaction: InteractionParam,
-		args: ArgsParam<typeof SponsorCommand>,
-		locale: LocaleParam,
-	): Promise<void> {
-		await this.handle(interaction, args, locale);
 	}
 
 	public override async userContext(
@@ -119,6 +86,9 @@ export default class extends Command<typeof SponsorCommand | typeof SponsorUserC
 		args: ArgsParam<typeof SponsorUserContextCommand>,
 		locale: LocaleParam,
 	): Promise<void> {
-		await this.handle(interaction, args, locale);
+		await interaction.reply({
+			content: "Use the `/role` slash command to assign a role.",
+			flags: MessageFlags.Ephemeral,
+		});
 	}
 }
