@@ -2,20 +2,19 @@
 
 ## Prerequisites
 
-- A VPS or server with Docker and Docker Compose installed
+- A VPS (I use [Contabo](https://contabo.com)) or server with Docker and Docker Compose installed
 - A Discord bot application ([Discord Developer Portal](https://discord.com/developers/applications))
 - Git
 
 ## 1. Create a Discord Bot
 
 1. Go to [Discord Developer Portal](https://discord.com/developers/applications)
-2. Click **New Application** and give it a name
-3. Go to **Bot** → click **Reset Token** and copy the token
-4. Enable these **Privileged Gateway Intents**:
+2. Click New Application and give it a name
+3. Go to Bot -> click Reset Token and copy the token
+4. Enable these Privileged Gateway Intents:
    - Server Members Intent
    - Message Content Intent
-5. Go to **Installation** → check **Guild Install** only
-6. (Optional) Turn off **Public Bot** under the Bot tab to make it private
+5. Go to Installation -> check Guild Install only
 
 ## 2. Clone the Repository
 
@@ -48,10 +47,10 @@ docker compose -f docker-compose.production.yml up -d
 ```
 
 This starts:
-- **PostgreSQL** — database
-- **Redis** — caching and job queues
-- **Migrations** — sets up database tables automatically
-- **Bot** — the Discord bot
+- PostgreSQL — database
+- Redis — caching and job queues
+- Migrations — sets up database tables automatically
+- Bot — the Discord bot
 
 ## 5. Register Slash Commands
 
@@ -69,8 +68,6 @@ Replace `YOUR_CLIENT_ID` with your application's client ID from the Developer Po
 https://discord.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&permissions=1494984439878&scope=bot+applications.commands
 ```
 
-The permissions integer includes: Manage Roles, Kick Members, Ban Members, Manage Channels, View Audit Log, View Channels, Send Messages, Manage Messages, Read Message History, Moderate Members.
-
 ## 7. Verify
 
 Check the bot logs:
@@ -79,26 +76,26 @@ Check the bot logs:
 docker compose -f docker-compose.production.yml logs bot --tail 20
 ```
 
-You should see the bot log in and register commands.
+You should see the bot log in and register commands
 
 ## Useful Commands
 
-**View logs:**
+View logs:
 ```bash
 docker compose -f docker-compose.production.yml logs bot --tail 50 -f
 ```
 
-**Restart the bot:**
+Restart the bot:
 ```bash
 docker compose -f docker-compose.production.yml restart bot
 ```
 
-**Stop everything:**
+Stop everything:
 ```bash
 docker compose -f docker-compose.production.yml down
 ```
 
-**Update to latest version:**
+Update to latest version:
 ```bash
 git pull
 docker compose -f docker-compose.production.yml build --no-cache
@@ -106,37 +103,26 @@ docker compose -f docker-compose.production.yml up -d
 docker compose -f docker-compose.production.yml --profile deploy run --rm deploy-commands
 ```
 
-**View database:**
+View database:
 ```bash
 docker compose -f docker-compose.production.yml exec postgres psql -U postgres
 ```
 
 ## Troubleshooting
 
-**Bot says "application did not respond":**
+Bot says "application did not respond":
 - Check logs for errors: `docker compose -f docker-compose.production.yml logs bot --tail 30`
 - Make sure all intents are enabled in the Developer Portal
 - Restart the bot: `docker compose -f docker-compose.production.yml restart bot`
 
-**Slash commands not showing up:**
+Slash commands not showing up:
 - Re-register them: `docker compose -f docker-compose.production.yml --profile deploy run --rm deploy-commands`
 - Wait a few minutes — Discord can take time to propagate guild commands
 
-**Database connection errors:**
+Database connection errors:
 - Make sure PostgreSQL is healthy: `docker compose -f docker-compose.production.yml ps`
 - Check if migrations ran: `docker compose -f docker-compose.production.yml logs migrate`
 
-**Build failures:**
+Build failures:
 - Try a clean build: `docker compose -f docker-compose.production.yml build --no-cache`
 
-## Environment Variables Reference
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `DISCORD_TOKEN` | Yes | Your bot token from the Developer Portal |
-| `PGPASSWORD` | Yes | PostgreSQL password |
-| `API_PORT` | Yes | Port for the internal API (default: 3003) |
-| `API_JWT_SECRET` | Yes | Secret for JWT authentication |
-| `LOGGER_NAME` | No | Logger identifier (default: yuudachi) |
-| `SCAM_DOMAIN_WS` | No | WebSocket URL for scam domain detection |
-| `SCAM_DOMAIN_IDENTITY` | No | Identity for scam domain WebSocket |
