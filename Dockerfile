@@ -8,7 +8,7 @@ COPY packages/ packages/
 COPY apps/yuudachi/package.json apps/yuudachi/
 RUN pnpm install --frozen-lockfile
 
-COPY tsconfig.json tsconfig.eslint.json ./
+COPY tsconfig.json ./
 COPY packages/ packages/
 COPY apps/yuudachi/ apps/yuudachi/
 
