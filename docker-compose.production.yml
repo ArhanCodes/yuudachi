@@ -41,7 +41,7 @@ services:
       - PGDB=postgres
     env_file:
       - .env
-    command: ["npx", "env-cmd", "--silent", "ley"]
+    command: ["npx", "ley", "up"]
 
   bot:
     build: .
