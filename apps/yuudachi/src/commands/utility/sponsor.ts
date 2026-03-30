@@ -18,12 +18,18 @@ export default class extends Command<typeof SponsorCommand | typeof SponsorUserC
 	): Promise<void> {
 		const reply = await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
-		const role = args.role;
-		const targetUser = args.user;
+		const targetMember = interaction.options.getMember("user");
+		const targetUser = interaction.options.getUser("user", true);
+		const role = interaction.options.getRole("role", true);
 
-		if (targetUser.member?.roles.cache.has(role.role!.id)) {
+		if (!targetMember) {
+			await interaction.editReply({ content: "Could not find that member." });
+			return;
+		}
+
+		if ("cache" in targetMember.roles && targetMember.roles.cache.has(role.id)) {
 			await interaction.editReply({
-				content: `${targetUser.user.toString()} already has the ${role.role!.name} role.`,
+				content: `${targetUser.toString()} already has the **${role.name}** role.`,
 			});
 			return;
 		}
@@ -43,7 +49,7 @@ export default class extends Command<typeof SponsorCommand | typeof SponsorUserC
 		});
 
 		await interaction.editReply({
-			content: `Add the **${role.role!.name}** role to ${targetUser.user.toString()} (${targetUser.user.tag} - ${targetUser.user.id})?`,
+			content: `Add the **${role.name}** role to ${targetUser.toString()} (${targetUser.tag} - ${targetUser.id})?`,
 			components: [createMessageActionRow([cancelButton, confirmButton])],
 		});
 
@@ -66,16 +72,18 @@ export default class extends Command<typeof SponsorCommand | typeof SponsorUserC
 
 		if (collectedInteraction?.customId === cancelKey) {
 			await collectedInteraction.update({
-				content: `Cancelled adding **${role.role!.name}** to ${targetUser.user.toString()}.`,
+				content: `Cancelled adding **${role.name}** to ${targetUser.toString()}.`,
 				components: [],
 			});
 		} else if (collectedInteraction?.customId === confirmKey) {
 			await collectedInteraction.deferUpdate();
 
-			await targetUser.member?.roles.add(role.role!.id, `Role assigned by ${interaction.user.tag}`);
+			if ("add" in targetMember.roles) {
+				await targetMember.roles.add(role.id, `Role assigned by ${interaction.user.tag}`);
+			}
 
 			await collectedInteraction.editReply({
-				content: `Successfully added **${role.role!.name}** to ${targetUser.user.toString()}.`,
+				content: `Successfully added **${role.name}** to ${targetUser.toString()}.`,
 				components: [],
 			});
 		}
