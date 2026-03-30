@@ -1,0 +1,86 @@
+name: yuudachi-prod
+
+services:
+  postgres:
+    build: ./docker/postgresql
+    environment:
+      POSTGRES_PASSWORD: "${PGPASSWORD}"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    expose:
+      - "5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+
+  redis:
+    image: redis:8-alpine
+    command: ["redis-server", "--save", "300", "1", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    expose:
+      - "6379"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping"]
+      interval: 10s
+      timeout: 5s
+
+  migrate:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - PGHOST=postgres
+      - PGPORT=5432
+      - PGUSER=postgres
+      - PGPASSWORD=${PGPASSWORD}
+      - PGDB=postgres
+    env_file:
+      - .env
+    command: ["npx", "env-cmd", "--silent", "ley"]
+
+  bot:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      - PGHOST=postgres
+      - PGPORT=5432
+      - PGUSER=postgres
+      - PGPASSWORD=${PGPASSWORD}
+      - PGDB=postgres
+      - REDISHOST=redis
+      - REDISPORT=6379
+    env_file:
+      - .env
+    restart: unless-stopped
+
+  deploy-commands:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - PGHOST=postgres
+      - PGPORT=5432
+      - PGUSER=postgres
+      - PGPASSWORD=${PGPASSWORD}
+      - PGDB=postgres
+    env_file:
+      - .env
+    command: ["node", "--enable-source-maps", "dist/deploy.js"]
+    profiles:
+      - deploy
+
+volumes:
+  postgres-data:
+  redis-data:
