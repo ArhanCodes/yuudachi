@@ -37,6 +37,20 @@ export const SettingsCommand = {
 			],
 		},
 		{
+			name: "report-channel",
+			description: "Set the channel for user reports",
+			type: ApplicationCommandOptionType.Subcommand,
+			options: [
+				{
+					name: "channel",
+					description: "The channel for reports",
+					type: ApplicationCommandOptionType.Channel,
+					channel_types: [ChannelType.GuildText, ChannelType.GuildForum],
+					required: true,
+				},
+			],
+		},
+		{
 			name: "view",
 			description: "View current guild settings",
 			type: ApplicationCommandOptionType.Subcommand,

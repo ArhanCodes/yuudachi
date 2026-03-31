@@ -24,7 +24,6 @@ import {
 	RefreshScamlistCommand,
 	SponsorCommand,
 	ReportCommand,
-	ClaimSponsorCommand,
 	SettingsCommand,
 
 	// Context Menu
@@ -70,7 +69,6 @@ try {
 			RefreshScamlistCommand,
 			SponsorCommand,
 			ReportCommand,
-			ClaimSponsorCommand,
 			SettingsCommand,
 
 			// Context Menu

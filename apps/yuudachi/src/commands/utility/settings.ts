@@ -49,16 +49,30 @@ export default class extends Command<typeof SettingsCommand> {
 				content: `Mod role set to <@&${role.id}>.`,
 				flags: MessageFlags.Ephemeral,
 			});
+		} else if (subcommand === "report-channel") {
+			const channel = interaction.options.getChannel("channel", true);
+
+			await sql`
+				insert into guild_settings (guild_id, report_channel_id)
+				values (${guildId}, ${channel.id})
+				on conflict (guild_id)
+				do update set report_channel_id = ${channel.id}
+			`;
+
+			await interaction.reply({
+				content: `Report channel set to <#${channel.id}>.`,
+				flags: MessageFlags.Ephemeral,
+			});
 		} else if (subcommand === "view") {
-			const [settings] = await sql<[{ mod_log_channel_id: string | null; mod_role_id: string | null }?]>`
-				select mod_log_channel_id, mod_role_id
+			const [settings] = await sql<[{ mod_log_channel_id: string | null; mod_role_id: string | null; report_channel_id: string | null }?]>`
+				select mod_log_channel_id, mod_role_id, report_channel_id
 				from guild_settings
 				where guild_id = ${guildId}
 			`;
 
 			if (!settings) {
 				await interaction.reply({
-					content: "No settings configured yet. Use `/settings mod-log` and `/settings mod-role` to get started.",
+					content: "No settings configured yet. Use `/settings mod-log`, `/settings mod-role`, and `/settings report-channel` to get started.",
 					flags: MessageFlags.Ephemeral,
 				});
 				return;
@@ -67,6 +81,7 @@ export default class extends Command<typeof SettingsCommand> {
 			const lines = [
 				`**Mod Log Channel:** ${settings.mod_log_channel_id ? `<#${settings.mod_log_channel_id}>` : "Not set"}`,
 				`**Mod Role:** ${settings.mod_role_id ? `<@&${settings.mod_role_id}>` : "Not set"}`,
+				`**Report Channel:** ${settings.report_channel_id ? `<#${settings.report_channel_id}>` : "Not set"}`,
 			];
 
 			await interaction.reply({
