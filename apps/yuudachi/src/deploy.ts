@@ -1,6 +1,5 @@
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v10";
-import { ApplicationCommandOptionType, ChannelType } from "discord-api-types/v10";
 import {
 	// Moderation
 	AntiRaidNukeCommand,
@@ -35,6 +34,8 @@ import {
 	ReportUserContextCommand,
 } from "./interactions/index.js";
 
+// Using raw numeric values because const enums from discord-api-types
+// are not inlined by SWC, causing undefined values at runtime
 const TicketCommand = {
 	name: "ticket",
 	description: "Manage the ticket system",
@@ -42,19 +43,19 @@ const TicketCommand = {
 		{
 			name: "setup",
 			description: "Configure the ticket system for this guild",
-			type: ApplicationCommandOptionType.Subcommand,
+			type: 1, // Subcommand
 			options: [
 				{
 					name: "category",
 					description: "The category where ticket channels will be created",
-					type: ApplicationCommandOptionType.Channel,
-					channel_types: [ChannelType.GuildCategory],
+					type: 7, // Channel
+					channel_types: [4], // GuildCategory
 					required: true,
 				},
 				{
 					name: "support_role",
 					description: "The role that will have access to all tickets",
-					type: ApplicationCommandOptionType.Role,
+					type: 8, // Role
 					required: true,
 				},
 			],
@@ -62,13 +63,13 @@ const TicketCommand = {
 		{
 			name: "panel",
 			description: "Post a ticket panel with an Open Ticket button",
-			type: ApplicationCommandOptionType.Subcommand,
+			type: 1, // Subcommand
 			options: [
 				{
 					name: "channel",
 					description: "The channel to post the panel in (defaults to current channel)",
-					type: ApplicationCommandOptionType.Channel,
-					channel_types: [ChannelType.GuildText],
+					type: 7, // Channel
+					channel_types: [0], // GuildText
 					required: false,
 				},
 			],
@@ -76,7 +77,7 @@ const TicketCommand = {
 		{
 			name: "view",
 			description: "View current ticket configuration",
-			type: ApplicationCommandOptionType.Subcommand,
+			type: 1, // Subcommand
 		},
 	],
 	default_member_permissions: "0",
