@@ -1,7 +1,6 @@
 import {
 	ApplicationCommandOptionType,
 	ChannelType,
-	InteractionContextType,
 	type RESTPostAPIApplicationCommandsJSONBody,
 } from "discord-api-types/v10";
 
@@ -50,5 +49,4 @@ export const TicketCommand = {
 		},
 	],
 	default_member_permissions: "0",
-	contexts: [InteractionContextType.Guild],
 } as const satisfies RESTPostAPIApplicationCommandsJSONBody;
