@@ -20,6 +20,7 @@ export * from "./utility/sponsor.js";
 export * from "./utility/report.js";
 // claim-sponsor removed
 export * from "./utility/settings.js";
+export * from "./utility/ticket.js";
 export * from "./context-menu/history.js";
 export * from "./context-menu/sponsor.js";
 export * from "./context-menu/clear.js";

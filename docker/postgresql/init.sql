@@ -100,5 +100,43 @@ ALTER TABLE ONLY public.tags
     ADD CONSTRAINT tags_guild_name_key UNIQUE (guild, name);
 ALTER TABLE ONLY public.tags
     ADD CONSTRAINT tags_pkey PRIMARY KEY (id);
+CREATE TABLE public.ticket_config (
+    guild_id text NOT NULL,
+    category_id text,
+    support_role_id text,
+    panel_channel_id text,
+    panel_message_id text
+);
+COMMENT ON COLUMN public.ticket_config.guild_id IS 'The id of the guild this ticket config belongs to';
+COMMENT ON COLUMN public.ticket_config.category_id IS 'The category channel where ticket channels are created';
+COMMENT ON COLUMN public.ticket_config.support_role_id IS 'The role that has access to all tickets';
+COMMENT ON COLUMN public.ticket_config.panel_channel_id IS 'The channel where the ticket panel is posted';
+COMMENT ON COLUMN public.ticket_config.panel_message_id IS 'The message id of the ticket panel';
+CREATE TABLE public.tickets (
+    id serial NOT NULL,
+    guild_id text NOT NULL,
+    channel_id text,
+    opener_id text NOT NULL,
+    status text DEFAULT 'open' NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    closed_at timestamp with time zone
+);
+COMMENT ON COLUMN public.tickets.guild_id IS 'The id of the guild this ticket belongs to';
+COMMENT ON COLUMN public.tickets.channel_id IS 'The channel id of the ticket';
+COMMENT ON COLUMN public.tickets.opener_id IS 'The user who opened the ticket';
+COMMENT ON COLUMN public.tickets.status IS 'The status of the ticket (open or closed)';
+CREATE TABLE public.ticket_transcripts (
+    ticket_id integer NOT NULL,
+    transcript text NOT NULL
+);
+COMMENT ON COLUMN public.ticket_transcripts.ticket_id IS 'The ticket this transcript belongs to';
+ALTER TABLE ONLY public.ticket_config
+    ADD CONSTRAINT ticket_config_pkey PRIMARY KEY (guild_id);
+ALTER TABLE ONLY public.tickets
+    ADD CONSTRAINT tickets_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.ticket_transcripts
+    ADD CONSTRAINT ticket_transcripts_pkey PRIMARY KEY (ticket_id);
+ALTER TABLE ONLY public.ticket_transcripts
+    ADD CONSTRAINT ticket_transcripts_ticket_id_fkey FOREIGN KEY (ticket_id) REFERENCES public.tickets(id);
 CREATE TRIGGER set_public_tags_updated_at BEFORE UPDATE ON public.tags FOR EACH ROW EXECUTE FUNCTION public.set_current_timestamp_updated_at();
 COMMENT ON TRIGGER set_public_tags_updated_at ON public.tags IS 'trigger to set value of column "updated_at" to current timestamp on row update';

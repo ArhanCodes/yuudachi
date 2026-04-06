@@ -25,6 +25,7 @@ import {
 	SponsorCommand,
 	ReportCommand,
 	SettingsCommand,
+	TicketCommand,
 
 	// Context Menu
 	HistoryUserContextCommand,
@@ -70,6 +71,7 @@ try {
 			SponsorCommand,
 			ReportCommand,
 			SettingsCommand,
+			TicketCommand,
 
 			// Context Menu
 			HistoryUserContextCommand,
