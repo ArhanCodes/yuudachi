@@ -107,7 +107,7 @@ export const api = fastify({ trustProxy: true })
 				let banned = false;
 
 				try {
-					await client.guilds.cache.get("222078108977594368")!.bans.fetch(id);
+					await client.guilds.cache.get(process.env.DISCORD_GUILD_ID!)!.bans.fetch(id);
 					banned = true;
 				} catch {
 					banned = false;
@@ -118,7 +118,7 @@ export const api = fastify({ trustProxy: true })
 					const [case_] = await sql<[RawCase]>`
 						select *
 						from cases
-						where guild_id = '222078108977594368'
+						where guild_id = ${process.env.DISCORD_GUILD_ID!}
 							and target_id = ${id}
 							and action = ${CaseAction.Ban}
 						order by created_at desc
@@ -203,7 +203,7 @@ export const api = fastify({ trustProxy: true })
 				const appeals = await sql<RawCase[]>`
 					select *, (select count(*) from appeals) as appeals_count
 					from appeals
-					where guild_id = '222078108977594368'
+					where guild_id = ${process.env.DISCORD_GUILD_ID!}
 					order by created_at desc
 					limit 50
 				`;
@@ -211,7 +211,7 @@ export const api = fastify({ trustProxy: true })
 				const [{ count }] = await sql<[{ count: number }]>`
 					select count(*)
 					from appeals
-					where guild_id = '222078108977594368'
+					where guild_id = ${process.env.DISCORD_GUILD_ID!}
 				`;
 
 				return { appeals, count };
