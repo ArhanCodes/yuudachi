@@ -28,7 +28,7 @@ export default class extends Command<typeof LockdownCommand> {
 		// oxlint-disable-next-line switch-exhaustiveness-check
 		switch (Object.keys(args)[0]) {
 			case "lock": {
-				if (args.lock.channel?.type === ChannelType.GuildText) {
+				if (args.lock.channel && args.lock.channel.type !== ChannelType.GuildText) {
 					throw new Error(
 						i18next.t("command.mod.common.errors.not_a_text_channel", {
 							channel: `${args.lock.channel.toString()} - ${args.lock.channel.name} (${args.lock.channel.id})`,
