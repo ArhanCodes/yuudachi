@@ -83,6 +83,116 @@ const TicketCommand = {
 	default_member_permissions: "0",
 };
 
+const PurgeCommand = {
+	name: "purge",
+	description: "Bulk delete messages with filters",
+	options: [
+		{
+			name: "any",
+			description: "Delete the last N messages in this channel",
+			type: 1, // Subcommand
+			options: [
+				{
+					name: "amount",
+					description: "Number of messages to scan (1-100)",
+					type: 4, // Integer
+					required: true,
+					min_value: 1,
+					max_value: 100,
+				},
+			],
+		},
+		{
+			name: "user",
+			description: "Delete the last N messages from a specific user",
+			type: 1,
+			options: [
+				{
+					name: "user",
+					description: "The user whose messages to delete",
+					type: 6, // User
+					required: true,
+				},
+				{
+					name: "amount",
+					description: "Number of messages to scan (1-100)",
+					type: 4,
+					required: true,
+					min_value: 1,
+					max_value: 100,
+				},
+			],
+		},
+		{
+			name: "bots",
+			description: "Delete bot messages from the last N messages",
+			type: 1,
+			options: [
+				{
+					name: "amount",
+					description: "Number of messages to scan (1-100)",
+					type: 4,
+					required: true,
+					min_value: 1,
+					max_value: 100,
+				},
+			],
+		},
+		{
+			name: "match",
+			description: "Delete messages containing specific text",
+			type: 1,
+			options: [
+				{
+					name: "text",
+					description: "Text the messages must contain (case-insensitive)",
+					type: 3, // String
+					required: true,
+				},
+				{
+					name: "amount",
+					description: "Number of messages to scan (1-100)",
+					type: 4,
+					required: true,
+					min_value: 1,
+					max_value: 100,
+				},
+			],
+		},
+		{
+			name: "links",
+			description: "Delete messages containing links",
+			type: 1,
+			options: [
+				{
+					name: "amount",
+					description: "Number of messages to scan (1-100)",
+					type: 4,
+					required: true,
+					min_value: 1,
+					max_value: 100,
+				},
+			],
+		},
+		{
+			name: "attachments",
+			description: "Delete messages with attachments/embeds",
+			type: 1,
+			options: [
+				{
+					name: "amount",
+					description: "Number of messages to scan (1-100)",
+					type: 4,
+					required: true,
+					min_value: 1,
+					max_value: 100,
+				},
+			],
+		},
+	],
+	default_member_permissions: "0",
+};
+
 const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN!);
 
 try {
@@ -110,6 +220,7 @@ try {
 			LockdownCommand,
 			TimeoutCommand,
 			ClearCommand,
+			PurgeCommand,
 			ReportUtilsCommand,
 
 			// Utility
