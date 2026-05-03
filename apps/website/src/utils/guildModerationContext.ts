@@ -48,7 +48,7 @@ async function fetchDiscordGuilds(tokenValue: string) {
 		headers: {
 			Authorization: `Bearer ${tokenValue}`,
 		},
-		next: { revalidate: 3_600 },
+		next: { revalidate: 30 },
 	});
 
 	if (guildsData.status !== 200) {
@@ -63,7 +63,7 @@ async function fetchDiscordMember(tokenValue: string, guildId: string) {
 		headers: {
 			Authorization: `Bearer ${tokenValue}`,
 		},
-		next: { revalidate: 3_600 },
+		next: { revalidate: 30 },
 	});
 
 	if (memberData.status !== 200) {
